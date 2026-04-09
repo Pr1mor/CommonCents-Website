@@ -1,574 +1,1186 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>CommonCents — Real-time budgeting for students & freelancers</title>
-<meta name="description" content="CommonCents is an Android financial management app that turns daily spending into real-time confidence. Built by Group 13 (BrokieBros) for COMP 3350, Winter 2026." />
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>
+			CommonCents — Real-time budgeting for students & freelancers
+		</title>
+		<meta
+			name="description"
+			content="CommonCents is an Android financial management app that turns daily spending into real-time confidence. Built by Group 13 (BrokieBros) for COMP 3350, Winter 2026."
+		/>
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet">
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700;9..144,900&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&family=Inter+Tight:wght@400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
 
-<script src="https://cdn.tailwindcss.com"></script>
-<script>
-  tailwind.config = {
-    theme: {
-      extend: {
-        fontFamily: {
-          display: ['Fraunces', 'serif'],
-          serif: ['"Instrument Serif"', 'serif'],
-          sans: ['"Inter Tight"', 'system-ui', 'sans-serif'],
-          mono: ['"JetBrains Mono"', 'monospace'],
-        },
-        colors: {
-          mint: {
-            50:  '#f0fdf6',
-            100: '#dbfbe8',
-            200: '#b9f4d1',
-            300: '#83e8ad',
-            400: '#46d382',
-            500: '#1fb864',
-            600: '#13954f',
-            700: '#137542',
-            800: '#155c37',
-            900: '#134c2f',
-          },
-          ink: '#0a1f17',
-          cream: '#fbfaf4',
-        },
-      },
-    },
-  };
-</script>
+		<script src="https://cdn.tailwindcss.com"></script>
+		<script>
+			tailwind.config = {
+				theme: {
+					extend: {
+						fontFamily: {
+							display: ["Fraunces", "serif"],
+							serif: ['"Instrument Serif"', "serif"],
+							sans: ['"Inter Tight"', "system-ui", "sans-serif"],
+							mono: ['"JetBrains Mono"', "monospace"],
+						},
+						colors: {
+							mint: {
+								50: "#f0fdf6",
+								100: "#dbfbe8",
+								200: "#b9f4d1",
+								300: "#83e8ad",
+								400: "#46d382",
+								500: "#1fb864",
+								600: "#13954f",
+								700: "#137542",
+								800: "#155c37",
+								900: "#134c2f",
+							},
+							ink: "#0a1f17",
+							cream: "#fbfaf4",
+						},
+					},
+				},
+			};
+		</script>
 
-<style>
-  html { scroll-behavior: smooth; }
-  body {
-    background: #fbfaf4;
-    color: #0a1f17;
-    font-family: 'Inter Tight', system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
-  }
+		<style>
+			html {
+				scroll-behavior: smooth;
+			}
+			body {
+				background: #fbfaf4;
+				color: #0a1f17;
+				font-family: "Inter Tight", system-ui, sans-serif;
+				-webkit-font-smoothing: antialiased;
+			}
 
-  /* Grain texture overlay */
-  .grain::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 1;
-    opacity: 0.035;
-    mix-blend-mode: multiply;
-    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  }
+			/* Grain texture overlay */
+			.grain::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				z-index: 1;
+				opacity: 0.035;
+				mix-blend-mode: multiply;
+				background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+			}
 
-  /* Gradient mesh hero background */
-  .hero-mesh {
-    background:
-      radial-gradient(at 20% 20%, rgba(70, 211, 130, 0.35) 0px, transparent 50%),
-      radial-gradient(at 80% 10%, rgba(184, 244, 209, 0.6) 0px, transparent 50%),
-      radial-gradient(at 75% 75%, rgba(31, 184, 100, 0.25) 0px, transparent 50%),
-      radial-gradient(at 15% 85%, rgba(255, 238, 180, 0.5) 0px, transparent 50%),
-      #fbfaf4;
-  }
+			/* Gradient mesh hero background */
+			.hero-mesh {
+				background:
+					radial-gradient(
+						at 20% 20%,
+						rgba(70, 211, 130, 0.35) 0px,
+						transparent 50%
+					),
+					radial-gradient(
+						at 80% 10%,
+						rgba(184, 244, 209, 0.6) 0px,
+						transparent 50%
+					),
+					radial-gradient(
+						at 75% 75%,
+						rgba(31, 184, 100, 0.25) 0px,
+						transparent 50%
+					),
+					radial-gradient(
+						at 15% 85%,
+						rgba(255, 238, 180, 0.5) 0px,
+						transparent 50%
+					),
+					#fbfaf4;
+			}
 
-  .text-gradient {
-    background: linear-gradient(120deg, #137542 0%, #1fb864 50%, #46d382 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    color: transparent;
-  }
+			.text-gradient {
+				background: linear-gradient(
+					120deg,
+					#137542 0%,
+					#1fb864 50%,
+					#46d382 100%
+				);
+				-webkit-background-clip: text;
+				background-clip: text;
+				color: transparent;
+			}
 
-  /* Marquee */
-  @keyframes marquee {
-    from { transform: translateX(0); }
-    to   { transform: translateX(-50%); }
-  }
-  .marquee-track {
-    animation: marquee 40s linear infinite;
-  }
+			/* Marquee */
+			@keyframes marquee {
+				from {
+					transform: translateX(0);
+				}
+				to {
+					transform: translateX(-50%);
+				}
+			}
+			.marquee-track {
+				animation: marquee 40s linear infinite;
+			}
 
-  /* Fade-in on load */
-  @keyframes riseIn {
-    from { opacity: 0; transform: translateY(24px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-  .rise { animation: riseIn 0.9s cubic-bezier(.2,.8,.2,1) both; }
-  .rise-1 { animation-delay: 0.05s; }
-  .rise-2 { animation-delay: 0.15s; }
-  .rise-3 { animation-delay: 0.25s; }
-  .rise-4 { animation-delay: 0.35s; }
-  .rise-5 { animation-delay: 0.45s; }
+			/* Fade-in on load */
+			@keyframes riseIn {
+				from {
+					opacity: 0;
+					transform: translateY(24px);
+				}
+				to {
+					opacity: 1;
+					transform: translateY(0);
+				}
+			}
+			.rise {
+				animation: riseIn 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+			}
+			.rise-1 {
+				animation-delay: 0.05s;
+			}
+			.rise-2 {
+				animation-delay: 0.15s;
+			}
+			.rise-3 {
+				animation-delay: 0.25s;
+			}
+			.rise-4 {
+				animation-delay: 0.35s;
+			}
+			.rise-5 {
+				animation-delay: 0.45s;
+			}
 
-  /* Card hover lift */
-  .lift { transition: transform .4s cubic-bezier(.2,.8,.2,1), box-shadow .4s; }
-  .lift:hover { transform: translateY(-4px); box-shadow: 0 30px 60px -30px rgba(19, 117, 66, 0.35); }
+			/* Card hover lift */
+			.lift {
+				transition:
+					transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1),
+					box-shadow 0.4s;
+			}
+			.lift:hover {
+				transform: translateY(-4px);
+				box-shadow: 0 30px 60px -30px rgba(19, 117, 66, 0.35);
+			}
 
-  /* Ticker dot */
-  .pulse-dot {
-    width: 8px; height: 8px; border-radius: 999px; background: #1fb864;
-    box-shadow: 0 0 0 0 rgba(31, 184, 100, 0.7);
-    animation: pulse 2s infinite;
-  }
-  @keyframes pulse {
-    0%   { box-shadow: 0 0 0 0 rgba(31, 184, 100, 0.7); }
-    70%  { box-shadow: 0 0 0 10px rgba(31, 184, 100, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(31, 184, 100, 0); }
-  }
+			/* Ticker dot */
+			.pulse-dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 999px;
+				background: #1fb864;
+				box-shadow: 0 0 0 0 rgba(31, 184, 100, 0.7);
+				animation: pulse 2s infinite;
+			}
+			@keyframes pulse {
+				0% {
+					box-shadow: 0 0 0 0 rgba(31, 184, 100, 0.7);
+				}
+				70% {
+					box-shadow: 0 0 0 10px rgba(31, 184, 100, 0);
+				}
+				100% {
+					box-shadow: 0 0 0 0 rgba(31, 184, 100, 0);
+				}
+			}
 
-  /* Ledger underline */
-  .ledger {
-    background-image: linear-gradient(transparent 85%, rgba(31, 184, 100, 0.35) 85%);
-    background-repeat: no-repeat;
-    background-size: 100% 100%;
-  }
+			/* Ledger underline */
+			.ledger {
+				background-image: linear-gradient(
+					transparent 85%,
+					rgba(31, 184, 100, 0.35) 85%
+				);
+				background-repeat: no-repeat;
+				background-size: 100% 100%;
+			}
 
-  /* TODO pill */
-  .todo {
-    display: inline-block;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.7rem;
-    font-weight: 500;
-    padding: 2px 10px;
-    border-radius: 999px;
-    background: #fff1b8;
-    color: #7a5a00;
-    border: 1px dashed #d4a500;
-    letter-spacing: 0.04em;
-    text-transform: uppercase;
-  }
+			/* TODO pill */
+			.todo {
+				display: inline-block;
+				font-family: "JetBrains Mono", monospace;
+				font-size: 0.7rem;
+				font-weight: 500;
+				padding: 2px 10px;
+				border-radius: 999px;
+				background: #fff1b8;
+				color: #7a5a00;
+				border: 1px dashed #d4a500;
+				letter-spacing: 0.04em;
+				text-transform: uppercase;
+			}
 
-  /* Stat card grid lines */
-  .stat-grid {
-    background-image:
-      linear-gradient(rgba(10, 31, 23, 0.07) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(10, 31, 23, 0.07) 1px, transparent 1px);
-    background-size: 24px 24px;
-  }
+			/* Stat card grid lines */
+			.stat-grid {
+				background-image:
+					linear-gradient(
+						rgba(10, 31, 23, 0.07) 1px,
+						transparent 1px
+					),
+					linear-gradient(
+						90deg,
+						rgba(10, 31, 23, 0.07) 1px,
+						transparent 1px
+					);
+				background-size: 24px 24px;
+			}
 
-  section { scroll-margin-top: 80px; }
-</style>
-</head>
-<body class="grain">
+			section {
+				scroll-margin-top: 80px;
+			}
+		</style>
+	</head>
+	<body class="grain">
+		<!-- ─────────────────────────── NAV ─────────────────────────── -->
+		<nav
+			class="sticky top-0 z-40 backdrop-blur-md bg-cream/75 border-b border-ink/10"
+		>
+			<div
+				class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between"
+			>
+				<a href="#top" class="flex items-center gap-2 group">
+					<span
+						class="text-2xl font-display font-black tracking-tight"
+						>Common<span class="text-mint-600">¢</span>ents</span
+					>
+				</a>
+				<div
+					class="hidden md:flex items-center gap-8 text-sm font-medium"
+				>
+					<a href="#overview" class="hover:text-mint-600 transition"
+						>Overview</a
+					>
+					<a href="#features" class="hover:text-mint-600 transition"
+						>Features</a
+					>
+					<a href="#team" class="hover:text-mint-600 transition"
+						>Team</a
+					>
+					<a href="#demo" class="hover:text-mint-600 transition"
+						>Demo</a
+					>
+					<a href="#postmortem" class="hover:text-mint-600 transition"
+						>Postmortem</a
+					>
+				</div>
+				<a
+					href="https://code.cs.umanitoba.ca/comp3350-winter2026/a02-g13-brokiebros"
+					class="hidden md:inline-flex items-center gap-2 bg-ink text-cream px-4 py-2 rounded-full text-sm font-medium hover:bg-mint-700 transition"
+				>
+					Repository
+					<span aria-hidden>↗</span>
+				</a>
+			</div>
+		</nav>
 
-<!-- ─────────────────────────── NAV ─────────────────────────── -->
-<nav class="sticky top-0 z-40 backdrop-blur-md bg-cream/75 border-b border-ink/10">
-  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-    <a href="#top" class="flex items-center gap-2 group">
-      <span class="text-2xl font-display font-black tracking-tight">Common<span class="text-mint-600">¢</span>ents</span>
-    </a>
-    <div class="hidden md:flex items-center gap-8 text-sm font-medium">
-      <a href="#overview" class="hover:text-mint-600 transition">Overview</a>
-      <a href="#features" class="hover:text-mint-600 transition">Features</a>
-      <a href="#team"     class="hover:text-mint-600 transition">Team</a>
-      <a href="#demo"     class="hover:text-mint-600 transition">Demo</a>
-      <a href="#postmortem" class="hover:text-mint-600 transition">Postmortem</a>
-    </div>
-    <a href="https://code.cs.umanitoba.ca/comp3350-winter2026/a02-g13-brokiebros" class="hidden md:inline-flex items-center gap-2 bg-ink text-cream px-4 py-2 rounded-full text-sm font-medium hover:bg-mint-700 transition">
-      Repository
-      <span aria-hidden>↗</span>
-    </a>
-  </div>
-</nav>
+		<!-- ─────────────────────────── HERO ─────────────────────────── -->
+		<header id="top" class="hero-mesh relative overflow-hidden">
+			<div
+				class="max-w-7xl mx-auto px-6 pt-20 pb-28 md:pt-28 md:pb-36 relative"
+			>
+				<!-- Live ticker -->
+				<div
+					class="rise rise-1 inline-flex items-center gap-3 bg-white/70 backdrop-blur border border-ink/10 px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider mb-8"
+				>
+					<span class="pulse-dot"></span>
+					<span>COMP 3350 · Winter 2026 · Final Release</span>
+				</div>
 
-<!-- ─────────────────────────── HERO ─────────────────────────── -->
-<header id="top" class="hero-mesh relative overflow-hidden">
-  <div class="max-w-7xl mx-auto px-6 pt-20 pb-28 md:pt-28 md:pb-36 relative">
+				<h1
+					class="rise rise-2 font-display font-black text-6xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight max-w-5xl"
+				>
+					Budget in the
+					<span class="font-serif italic font-normal text-gradient"
+						>moment</span
+					>,<br />
+					not in <span class="ledger">hindsight.</span>
+				</h1>
 
-    <!-- Live ticker -->
-    <div class="rise rise-1 inline-flex items-center gap-3 bg-white/70 backdrop-blur border border-ink/10 px-4 py-1.5 rounded-full text-xs font-mono uppercase tracking-wider mb-8">
-      <span class="pulse-dot"></span>
-      <span>COMP 3350 · Winter 2026 · Final Release</span>
-    </div>
+				<p
+					class="rise rise-3 mt-10 max-w-2xl text-xl md:text-2xl text-ink/75 font-light leading-relaxed"
+				>
+					CommonCents is an Android app that turns every purchase into
+					a decision, not a regret. Built for students and freelancers
+					who want financial confidence without the spreadsheet.
+				</p>
 
-    <h1 class="rise rise-2 font-display font-black text-6xl md:text-8xl lg:text-9xl leading-[0.88] tracking-tight max-w-5xl">
-      Budget in the <span class="font-serif italic font-normal text-gradient">moment</span>,<br/>
-      not in <span class="ledger">hindsight.</span>
-    </h1>
+				<div
+					class="rise rise-4 mt-12 flex flex-wrap items-center gap-4"
+				>
+					<a
+						href="#demo"
+						class="group bg-ink text-cream px-7 py-4 rounded-full font-medium text-base hover:bg-mint-700 transition inline-flex items-center gap-3"
+					>
+						Watch the demo
+						<span class="group-hover:translate-x-1 transition"
+							>→</span
+						>
+					</a>
+					<a
+						href="#features"
+						class="text-ink/80 font-medium hover:text-mint-700 transition inline-flex items-center gap-2"
+					>
+						Explore features
+					</a>
+				</div>
+			</div>
+		</header>
 
-    <p class="rise rise-3 mt-10 max-w-2xl text-xl md:text-2xl text-ink/75 font-light leading-relaxed">
-      CommonCents is an Android app that turns every purchase into a decision, not a regret. Built for students and freelancers who want financial confidence without the spreadsheet.
-    </p>
+		<!-- ─────────────────── MARQUEE ─────────────────── -->
+		<div
+			class="bg-ink text-cream py-6 overflow-hidden border-y border-mint-700/30 relative z-10"
+		>
+			<div class="flex whitespace-nowrap marquee-track">
+				<div
+					class="flex items-center gap-10 px-5 font-display text-3xl font-black"
+				>
+					<span>REAL-TIME BUDGETING</span
+					><span class="text-mint-400">¢</span>
+					<span>OFFLINE FIRST</span
+					><span class="text-mint-400">¢</span>
+					<span>SPENDING LIMITS</span
+					><span class="text-mint-400">¢</span>
+					<span>ANALYTICS DASHBOARD</span
+					><span class="text-mint-400">¢</span>
+					<span>RECURRING AUTOMATIONS</span
+					><span class="text-mint-400">¢</span>
+					<span>BUDGET PROJECTION</span
+					><span class="text-mint-400">¢</span>
+				</div>
+				<div
+					class="flex items-center gap-10 px-5 font-display text-3xl font-black"
+					aria-hidden="true"
+				>
+					<span>REAL-TIME BUDGETING</span
+					><span class="text-mint-400">¢</span>
+					<span>OFFLINE FIRST</span
+					><span class="text-mint-400">¢</span>
+					<span>SPENDING LIMITS</span
+					><span class="text-mint-400">¢</span>
+					<span>ANALYTICS DASHBOARD</span
+					><span class="text-mint-400">¢</span>
+					<span>RECURRING AUTOMATIONS</span
+					><span class="text-mint-400">¢</span>
+					<span>BUDGET PROJECTION</span
+					><span class="text-mint-400">¢</span>
+				</div>
+			</div>
+		</div>
 
-    <div class="rise rise-4 mt-12 flex flex-wrap items-center gap-4">
-      <a href="#demo" class="group bg-ink text-cream px-7 py-4 rounded-full font-medium text-base hover:bg-mint-700 transition inline-flex items-center gap-3">
-        Watch the demo
-        <span class="group-hover:translate-x-1 transition">→</span>
-      </a>
-      <a href="#features" class="text-ink/80 font-medium hover:text-mint-700 transition inline-flex items-center gap-2">
-        Explore features
-      </a>
-    </div>
+		<!-- ─────────────────── OVERVIEW ─────────────────── -->
+		<section
+			id="overview"
+			class="max-w-7xl mx-auto px-6 py-28 relative z-10"
+		>
+			<div class="grid md:grid-cols-12 gap-12">
+				<div class="md:col-span-4">
+					<div class="sticky top-28">
+						<div
+							class="text-xs font-mono uppercase tracking-widest text-mint-700"
+						>
+							§ 01 — Vision
+						</div>
+						<h2
+							class="font-display text-5xl md:text-6xl font-black mt-4 leading-none"
+						>
+							The<br />problem.
+						</h2>
+					</div>
+				</div>
+				<div class="md:col-span-8 space-y-10">
+					<p
+						class="font-serif text-3xl md:text-4xl leading-snug text-ink/90"
+					>
+						Most budgeting happens <em>after</em> the damage is done
+						— a receipt shoved in a wallet, a spreadsheet touched
+						once a month, a regret at the checkout.
+					</p>
+					<p class="text-lg text-ink/70 leading-relaxed max-w-2xl">
+						CommonCents flips the loop. Every transaction is logged
+						in under 30 seconds, and the dashboard answers one
+						question instantly:
+						<strong class="text-ink">am I on track?</strong> It's a
+						tool for the moment before the purchase, not the month
+						after.
+					</p>
 
-  </div>
-</header>
+					<!-- Target users -->
+					<div class="grid sm:grid-cols-2 gap-5 pt-6">
+						<div
+							class="bg-white border border-ink/10 rounded-3xl p-7 lift"
+						>
+							<div class="text-4xl mb-3">🎓</div>
+							<div class="font-display font-bold text-2xl">
+								University students
+							</div>
+							<p class="text-sm text-ink/65 mt-2 leading-relaxed">
+								Managing loans and limited allowances with zero
+								formal financial training.
+							</p>
+						</div>
+						<div
+							class="bg-white border border-ink/10 rounded-3xl p-7 lift"
+						>
+							<div class="text-4xl mb-3">💼</div>
+							<div class="font-display font-bold text-2xl">
+								Freelancers
+							</div>
+							<p class="text-sm text-ink/65 mt-2 leading-relaxed">
+								Irregular income streams that demand strict,
+								real-time expense discipline.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+		</section>
 
-<!-- ─────────────────── MARQUEE ─────────────────── -->
-<div class="bg-ink text-cream py-6 overflow-hidden border-y border-mint-700/30 relative z-10">
-  <div class="flex whitespace-nowrap marquee-track">
-    <div class="flex items-center gap-10 px-5 font-display text-3xl font-black">
-      <span>REAL-TIME BUDGETING</span><span class="text-mint-400">¢</span>
-      <span>OFFLINE FIRST</span><span class="text-mint-400">¢</span>
-      <span>SPENDING LIMITS</span><span class="text-mint-400">¢</span>
-      <span>ANALYTICS DASHBOARD</span><span class="text-mint-400">¢</span>
-      <span>RECURRING AUTOMATIONS</span><span class="text-mint-400">¢</span>
-      <span>BUDGET PROJECTION</span><span class="text-mint-400">¢</span>
-    </div>
-    <div class="flex items-center gap-10 px-5 font-display text-3xl font-black" aria-hidden="true">
-      <span>REAL-TIME BUDGETING</span><span class="text-mint-400">¢</span>
-      <span>OFFLINE FIRST</span><span class="text-mint-400">¢</span>
-      <span>SPENDING LIMITS</span><span class="text-mint-400">¢</span>
-      <span>ANALYTICS DASHBOARD</span><span class="text-mint-400">¢</span>
-      <span>RECURRING AUTOMATIONS</span><span class="text-mint-400">¢</span>
-      <span>BUDGET PROJECTION</span><span class="text-mint-400">¢</span>
-    </div>
-  </div>
-</div>
+		<!-- ─────────────────── FEATURES ─────────────────── -->
+		<section id="features" class="bg-ink text-cream py-28 relative z-10">
+			<div class="max-w-7xl mx-auto px-6">
+				<div
+					class="flex items-end justify-between mb-16 flex-wrap gap-6"
+				>
+					<div>
+						<div
+							class="text-xs font-mono uppercase tracking-widest text-mint-400"
+						>
+							§ 02 — What it does
+						</div>
+						<h2
+							class="font-display text-5xl md:text-7xl font-black mt-4 leading-none"
+						>
+							Major<br />features.
+						</h2>
+					</div>
+					<p class="max-w-md text-cream/60 text-lg">
+						Every feature is backed by a dedicated service in the
+						business layer and a real Android SQLite implementation
+						with a stub twin for testing.
+					</p>
+				</div>
 
-<!-- ─────────────────── OVERVIEW ─────────────────── -->
-<section id="overview" class="max-w-7xl mx-auto px-6 py-28 relative z-10">
-  <div class="grid md:grid-cols-12 gap-12">
-    <div class="md:col-span-4">
-      <div class="sticky top-28">
-        <div class="text-xs font-mono uppercase tracking-widest text-mint-700">§ 01 — Vision</div>
-        <h2 class="font-display text-5xl md:text-6xl font-black mt-4 leading-none">The<br/>problem.</h2>
-      </div>
-    </div>
-    <div class="md:col-span-8 space-y-10">
-      <p class="font-serif text-3xl md:text-4xl leading-snug text-ink/90">
-        Most budgeting happens <em>after</em> the damage is done — a receipt shoved in a wallet, a spreadsheet touched once a month, a regret at the checkout.
-      </p>
-      <p class="text-lg text-ink/70 leading-relaxed max-w-2xl">
-        CommonCents flips the loop. Every transaction is logged in under 30 seconds, and the dashboard answers one question instantly: <strong class="text-ink">am I on track?</strong> It's a tool for the moment before the purchase, not the month after.
-      </p>
+				<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+					<div
+						class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition group"
+					>
+						<div class="font-mono text-xs text-mint-400">01</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							Rapid transaction entry
+						</div>
+						<p class="text-cream/60 text-sm mt-3 leading-relaxed">
+							Log a purchase in under 30 seconds. Amount,
+							category, date, description — done.
+						</p>
+					</div>
 
-      <!-- Target users -->
-      <div class="grid sm:grid-cols-2 gap-5 pt-6">
-        <div class="bg-white border border-ink/10 rounded-3xl p-7 lift">
-          <div class="text-4xl mb-3">🎓</div>
-          <div class="font-display font-bold text-2xl">University students</div>
-          <p class="text-sm text-ink/65 mt-2 leading-relaxed">Managing loans and limited allowances with zero formal financial training.</p>
-        </div>
-        <div class="bg-white border border-ink/10 rounded-3xl p-7 lift">
-          <div class="text-4xl mb-3">💼</div>
-          <div class="font-display font-bold text-2xl">Freelancers</div>
-          <p class="text-sm text-ink/65 mt-2 leading-relaxed">Irregular income streams that demand strict, real-time expense discipline.</p>
-        </div>
-      </div>
+					<div
+						class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition"
+					>
+						<div class="font-mono text-xs text-mint-400">02</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							Analytics dashboard
+						</div>
+						<p class="text-cream/60 text-sm mt-3 leading-relaxed">
+							Pie charts, bar charts, cumulative trends, and daily
+							net savings — all offline.
+						</p>
+					</div>
 
-    </div>
-  </div>
-</section>
+					<div
+						class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition"
+					>
+						<div class="font-mono text-xs text-mint-400">03</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							Spending limits & alerts
+						</div>
+						<p class="text-cream/60 text-sm mt-3 leading-relaxed">
+							Set per-category monthly caps and get home-page
+							alerts before you overshoot.
+						</p>
+					</div>
 
-<!-- ─────────────────── FEATURES ─────────────────── -->
-<section id="features" class="bg-ink text-cream py-28 relative z-10">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="flex items-end justify-between mb-16 flex-wrap gap-6">
-      <div>
-        <div class="text-xs font-mono uppercase tracking-widest text-mint-400">§ 02 — What it does</div>
-        <h2 class="font-display text-5xl md:text-7xl font-black mt-4 leading-none">Major<br/>features.</h2>
-      </div>
-      <p class="max-w-md text-cream/60 text-lg">Every feature is backed by a dedicated service in the business layer and a real Android SQLite implementation with a stub twin for testing.</p>
-    </div>
+					<div
+						class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition"
+					>
+						<div class="font-mono text-xs text-mint-400">04</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							Budget projection
+						</div>
+						<p class="text-cream/60 text-sm mt-3 leading-relaxed">
+							Project end-of-month savings from current spending
+							velocity vs. your income.
+						</p>
+					</div>
 
-    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+					<div
+						class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition"
+					>
+						<div class="font-mono text-xs text-mint-400">05</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							Recurring automations
+						</div>
+						<p class="text-cream/60 text-sm mt-3 leading-relaxed">
+							Set rent, subscriptions, and paydays to log
+							themselves on a schedule.
+						</p>
+					</div>
 
-      <div class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition group">
-        <div class="font-mono text-xs text-mint-400">01</div>
-        <div class="font-display text-2xl font-bold mt-4">Rapid transaction entry</div>
-        <p class="text-cream/60 text-sm mt-3 leading-relaxed">Log a purchase in under 30 seconds. Amount, category, date, description — done.</p>
-      </div>
+					<div
+						class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition"
+					>
+						<div class="font-mono text-xs text-mint-400">06</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							Search & sort
+						</div>
+						<p class="text-cream/60 text-sm mt-3 leading-relaxed">
+							Filter transactions by category, date range, amount,
+							or free-text description.
+						</p>
+					</div>
 
-      <div class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition">
-        <div class="font-mono text-xs text-mint-400">02</div>
-        <div class="font-display text-2xl font-bold mt-4">Analytics dashboard</div>
-        <p class="text-cream/60 text-sm mt-3 leading-relaxed">Pie charts, bar charts, cumulative trends, and daily net savings — all offline.</p>
-      </div>
+					<div
+						class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition"
+					>
+						<div class="font-mono text-xs text-mint-400">07</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							Import / Export
+						</div>
+						<p class="text-cream/60 text-sm mt-3 leading-relaxed">
+							Move data in and out via CSV. Your records never
+							leave your device unless you say so.
+						</p>
+					</div>
 
-      <div class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition">
-        <div class="font-mono text-xs text-mint-400">03</div>
-        <div class="font-display text-2xl font-bold mt-4">Spending limits & alerts</div>
-        <p class="text-cream/60 text-sm mt-3 leading-relaxed">Set per-category monthly caps and get home-page alerts before you overshoot.</p>
-      </div>
+					<div
+						class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition"
+					>
+						<div class="font-mono text-xs text-mint-400">08</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							Multi-user accounts
+						</div>
+						<p class="text-cream/60 text-sm mt-3 leading-relaxed">
+							Hashed credentials, per-user data isolation, private
+							budgets on a shared device.
+						</p>
+					</div>
 
-      <div class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition">
-        <div class="font-mono text-xs text-mint-400">04</div>
-        <div class="font-display text-2xl font-bold mt-4">Budget projection</div>
-        <p class="text-cream/60 text-sm mt-3 leading-relaxed">Project end-of-month savings from current spending velocity vs. your income.</p>
-      </div>
+					<div
+						class="bg-gradient-to-br from-mint-500 to-mint-700 text-cream border border-mint-400 rounded-3xl p-7"
+					>
+						<div class="font-mono text-xs text-cream/80">09</div>
+						<div class="font-display text-2xl font-bold mt-4">
+							100% offline & private
+						</div>
+						<p class="text-cream/80 text-sm mt-3 leading-relaxed">
+							No cloud, no telemetry, no accounts to create. Your
+							money data stays on your phone.
+						</p>
+					</div>
+				</div>
+			</div>
+		</section>
 
-      <div class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition">
-        <div class="font-mono text-xs text-mint-400">05</div>
-        <div class="font-display text-2xl font-bold mt-4">Recurring automations</div>
-        <p class="text-cream/60 text-sm mt-3 leading-relaxed">Set rent, subscriptions, and paydays to log themselves on a schedule.</p>
-      </div>
+		<!-- ─────────────────── TEAM ─────────────────── -->
+		<section id="team" class="max-w-7xl mx-auto px-6 py-28 relative z-10">
+			<div
+				class="text-xs font-mono uppercase tracking-widest text-mint-700"
+			>
+				§ 03 — The BrokieBros
+			</div>
+			<h2
+				class="font-display text-5xl md:text-7xl font-black mt-4 leading-none"
+			>
+				Team &amp;<br />contributions.
+			</h2>
+			<p class="mt-8 max-w-2xl text-lg text-ink/70 leading-relaxed">
+				Group 13 built CommonCents from a one-paragraph vision into a
+				432-commit, three-layer Android application over the Winter 2026
+				term.
+			</p>
 
-      <div class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition">
-        <div class="font-mono text-xs text-mint-400">06</div>
-        <div class="font-display text-2xl font-bold mt-4">Search & sort</div>
-        <p class="text-cream/60 text-sm mt-3 leading-relaxed">Filter transactions by category, date range, amount, or free-text description.</p>
-      </div>
+			<div class="mt-16 grid md:grid-cols-2 gap-6">
+				<!-- Member 1 -->
+				<article
+					class="bg-white border border-ink/10 rounded-3xl p-8 lift"
+				>
+					<div class="flex items-start justify-between gap-4">
+						<div>
+							<div class="font-display text-2xl font-black">
+								Mohammad Mohid Afzal
+							</div>
+							<a
+								href="mailto:afzalmm@myumanitoba.ca"
+								class="text-sm text-mint-700 font-mono"
+								>afzalmm@myumanitoba.ca</a
+							>
+						</div>
+						<div
+							class="w-14 h-14 rounded-full bg-mint-100 flex items-center justify-center font-display font-black text-2xl text-mint-700"
+						>
+							M
+						</div>
+					</div>
+					<div class="mt-6 space-y-4">
+						<div>
+							<div
+								class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2"
+							>
+								Contributions
+							</div>
+							<p class="text-sm text-ink/75 leading-relaxed">
+								Built and refined several core UI screens,
+								including Add Expense, Edit Transaction, Search
+								and Sort, and the Profile page. Also contributed
+								to the project's architecture design,
+								documentation, and Espresso end-to-end UI tests.
+							</p>
+						</div>
+						<div>
+							<div
+								class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2"
+							>
+								Technical skills gained
+							</div>
+							<p class="text-sm text-ink/75 leading-relaxed">
+								Git, especially branching, version control, and
+								team collaboration. Improved skills in Android
+								frontend development, Espresso UI testing,
+								cleaner UI code, and software documentation.
+							</p>
+						</div>
+					</div>
+				</article>
 
-      <div class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition">
-        <div class="font-mono text-xs text-mint-400">07</div>
-        <div class="font-display text-2xl font-bold mt-4">Import / Export</div>
-        <p class="text-cream/60 text-sm mt-3 leading-relaxed">Move data in and out via CSV. Your records never leave your device unless you say so.</p>
-      </div>
+				<!-- Member 2 — Zeel -->
+				<article
+					class="bg-white border border-ink/10 rounded-3xl p-8 lift"
+				>
+					<div class="flex items-start justify-between gap-4">
+						<div>
+							<div class="font-display text-2xl font-black">
+								Zeel Sandeepkumar Modi
+							</div>
+							<a
+								href="mailto:modizs@myumanitoba.ca"
+								class="text-sm text-mint-700 font-mono"
+								>modizs@myumanitoba.ca</a
+							>
+						</div>
+						<div
+							class="w-14 h-14 rounded-full bg-mint-100 flex items-center justify-center font-display font-black text-2xl text-mint-700"
+						>
+							Z
+						</div>
+					</div>
+					<div class="mt-6 space-y-4">
+						<div>
+							<div
+								class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2"
+							>
+								Contributions
+							</div>
+							<p class="text-sm text-ink/75 leading-relaxed">
+								Owned the UI layer and SQLite persistence layer
+								end-to-end. Led the full UI redesign in
+								Iteration 3 — establishing a consistent design
+								system, rebuilding activity layouts, and
+								updating the app-wide color scheme. Implemented
+								the bar chart view in the analytics dashboard
+								and built the PDF export feature. Designed and
+								maintained the SQLite database schema, including
+								migrations across iterations, and built the data
+								validation and integrity layer to ensure clean
+								data entry throughout the app.
+							</p>
+						</div>
+						<div>
+							<div
+								class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2"
+							>
+								Technical skills gained
+							</div>
+							<p class="text-sm text-ink/75 leading-relaxed">
+								Android activity lifecycle and view management;
+								SQLite schema design and migration strategies;
+								data validation patterns for robust persistence;
+								chart integration using MPAndroidChart; PDF
+								generation on Android; Git-based collaborative
+								development including PR reviews and branch
+								management; applying three-layer architecture
+								discipline to keep UI concerns cleanly separated
+								from business logic.
+							</p>
+						</div>
+					</div>
+				</article>
 
-      <div class="bg-cream/[0.04] border border-cream/10 rounded-3xl p-7 hover:bg-cream/[0.07] transition">
-        <div class="font-mono text-xs text-mint-400">08</div>
-        <div class="font-display text-2xl font-bold mt-4">Multi-user accounts</div>
-        <p class="text-cream/60 text-sm mt-3 leading-relaxed">Hashed credentials, per-user data isolation, private budgets on a shared device.</p>
-      </div>
+				<!-- Member 3 -->
+				<article
+					class="bg-white border border-ink/10 rounded-3xl p-8 lift"
+				>
+					<div class="flex items-start justify-between gap-4">
+						<div>
+							<div class="font-display text-2xl font-black">
+								Xue Nemoga-Stout
+							</div>
+							<a
+								href="mailto:nemogasx@myumanitoba.ca"
+								class="text-sm text-mint-700 font-mono"
+								>nemogasx@myumanitoba.ca</a
+							>
+						</div>
+						<div
+							class="w-14 h-14 rounded-full bg-mint-100 flex items-center justify-center font-display font-black text-2xl text-mint-700"
+						>
+							X
+						</div>
+					</div>
+					<div class="mt-6 space-y-4">
+						<div>
+							<div
+								class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2"
+							>
+								Contributions
+							</div>
+							<p class="text-sm text-ink/75 leading-relaxed">
+								Built the logic layer for many features,
+								including the monthly budget and spending
+								limits. Also contributed to testing, including
+								unit tests, integration tests, and E2E tests.
+							</p>
+						</div>
+						<div>
+							<div
+								class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2"
+							>
+								Technical skills gained
+							</div>
+							<p class="text-sm text-ink/75 leading-relaxed">
+								Gained familiarity with correct programming
+								practices such as SOLID, and experience spotting
+								code smells. Also gained skills in JUnit testing
+								and Mockito.
+							</p>
+						</div>
+					</div>
+				</article>
 
-      <div class="bg-gradient-to-br from-mint-500 to-mint-700 text-cream border border-mint-400 rounded-3xl p-7">
-        <div class="font-mono text-xs text-cream/80">09</div>
-        <div class="font-display text-2xl font-bold mt-4">100% offline & private</div>
-        <p class="text-cream/80 text-sm mt-3 leading-relaxed">No cloud, no telemetry, no accounts to create. Your money data stays on your phone.</p>
-      </div>
+				<!-- Member 4 -->
+				<article
+					class="bg-white border border-ink/10 rounded-3xl p-8 lift"
+				>
+					<div class="flex items-start justify-between gap-4">
+						<div>
+							<div class="font-display text-2xl font-black">
+								Pratham Patel
+							</div>
+							<a
+								href="mailto:patelpd3@myumanitoba.ca"
+								class="text-sm text-mint-700 font-mono"
+								>patelpd3@myumanitoba.ca</a
+							>
+						</div>
+						<div
+							class="w-14 h-14 rounded-full bg-mint-100 flex items-center justify-center font-display font-black text-2xl text-mint-700"
+						>
+							P
+						</div>
+					</div>
+					<div class="mt-6 space-y-4">
+						<div>
+							<div
+								class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2"
+							>
+								Contributions
+							</div>
+							<p class="text-sm text-ink/75 leading-relaxed">
+								Spearheaded the Business logic layer,
+								architecting core components like the
+								<code>AutomationManager</code>,
+								<code>FinancialManager</code>, and
+								<code>ExportManager</code> for CSV data exports.
+								Championed the project's testing strategy by
+								designing comprehensive JUnit and Mockito unit
+								test suites, as well as full-scale integration
+								tests to guarantee data integrity between the
+								persistence and business layers.
+							</p>
+						</div>
+						<div>
+							<div
+								class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2"
+							>
+								Technical skills gained
+							</div>
+							<p class="text-sm text-ink/75 leading-relaxed">
+								Advanced application of SOLID principles and
+								Clean Architecture, specifically keeping pure
+								Java business logic strictly isolated from
+								native Android dependencies. Deepened expertise
+								in automated testing frameworks (JUnit/Mockito),
+								Agile velocity tracking, cross-layer integration
+								testing, and leveraging generative AI for
+								architectural code reviews.
+							</p>
+						</div>
+					</div>
+				</article>
+			</div>
+		</section>
 
-    </div>
-  </div>
-</section>
+		<!-- ─────────────────── DEMO ─────────────────── -->
+		<section
+			id="demo"
+			class="relative z-10 py-28 bg-mint-50 border-y border-mint-200"
+		>
+			<div class="max-w-7xl mx-auto px-6">
+				<div
+					class="text-xs font-mono uppercase tracking-widest text-mint-700"
+				>
+					§ 04 — Product demo
+				</div>
+				<h2
+					class="font-display text-5xl md:text-7xl font-black mt-4 leading-none"
+				>
+					See it<br /><em class="font-serif font-normal"
+						>in motion.</em
+					>
+				</h2>
+				<p class="mt-8 max-w-2xl text-lg text-ink/70">
+					A guided walkthrough of the primary user flows: sign-in,
+					transaction entry, analytics dashboard, spending limits, and
+					budget projection.
+				</p>
 
-<!-- ─────────────────── TEAM ─────────────────── -->
-<section id="team" class="max-w-7xl mx-auto px-6 py-28 relative z-10">
-  <div class="text-xs font-mono uppercase tracking-widest text-mint-700">§ 03 — The BrokieBros</div>
-  <h2 class="font-display text-5xl md:text-7xl font-black mt-4 leading-none">Team &amp;<br/>contributions.</h2>
-  <p class="mt-8 max-w-2xl text-lg text-ink/70 leading-relaxed">Group 13 built CommonCents from a one-paragraph vision into a 432-commit, three-layer Android application over the Winter 2026 term.</p>
-
-  <div class="mt-16 grid md:grid-cols-2 gap-6">
-
-    <!-- Member 1 -->
-    <article class="bg-white border border-ink/10 rounded-3xl p-8 lift">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <div class="font-display text-2xl font-black">Mohammad Mohid Afzal</div>
-          <a href="mailto:afzalmm@myumanitoba.ca" class="text-sm text-mint-700 font-mono">afzalmm@myumanitoba.ca</a>
-        </div>
-        <div class="w-14 h-14 rounded-full bg-mint-100 flex items-center justify-center font-display font-black text-2xl text-mint-700">M</div>
-      </div>
-      <div class="mt-6 space-y-4">
-        <div>
-          <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2">Contributions</div>
-          <p class="text-sm text-ink/75 leading-relaxed">Built and refined several core UI screens, including Add Expense, Edit Transaction, Search and Sort, and the Profile page. Also contributed to the project's architecture design, documentation, and Espresso end-to-end UI tests.</p>
-        </div>
-        <div>
-          <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2">Technical skills gained</div>
-          <p class="text-sm text-ink/75 leading-relaxed">Git, especially branching, version control, and team collaboration. Improved skills in Android frontend development, Espresso UI testing, cleaner UI code, and software documentation.</p>
-        </div>
-      </div>
-    </article>
-
-    <!-- Member 2 — Zeel -->
-    <article class="bg-white border border-ink/10 rounded-3xl p-8 lift">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <div class="font-display text-2xl font-black">Zeel Sandeepkumar Modi</div>
-          <a href="mailto:modizs@myumanitoba.ca" class="text-sm text-mint-700 font-mono">modizs@myumanitoba.ca</a>
-        </div>
-        <div class="w-14 h-14 rounded-full bg-mint-100 flex items-center justify-center font-display font-black text-2xl text-mint-700">Z</div>
-      </div>
-      <div class="mt-6 space-y-4">
-        <div>
-          <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2">Contributions</div>
-          <p class="text-sm text-ink/75 leading-relaxed">
-            Owned the UI layer and SQLite persistence layer end-to-end. Led the full UI redesign in Iteration 3 — establishing a consistent design system, rebuilding activity layouts, and updating the app-wide color scheme. Implemented the bar chart view in the analytics dashboard and built the PDF export feature. Designed and maintained the SQLite database schema, including migrations across iterations, and built the data validation and integrity layer to ensure clean data entry throughout the app.
-          </p>
-        </div>
-        <div>
-          <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2">Technical skills gained</div>
-          <p class="text-sm text-ink/75 leading-relaxed">
-            Android activity lifecycle and view management; SQLite schema design and migration strategies; data validation patterns for robust persistence; chart integration using MPAndroidChart; PDF generation on Android; Git-based collaborative development including PR reviews and branch management; applying three-layer architecture discipline to keep UI concerns cleanly separated from business logic.
-          </p>
-        </div>
-      </div>
-    </article>
-
-    <!-- Member 3 -->
-    <article class="bg-white border border-ink/10 rounded-3xl p-8 lift">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <div class="font-display text-2xl font-black">Xue Nemoga-Stout</div>
-          <a href="mailto:nemogasx@myumanitoba.ca" class="text-sm text-mint-700 font-mono">nemogasx@myumanitoba.ca</a>
-        </div>
-        <div class="w-14 h-14 rounded-full bg-mint-100 flex items-center justify-center font-display font-black text-2xl text-mint-700">X</div>
-      </div>
-      <div class="mt-6 space-y-4">
-        <div>
-          <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2">Contributions</div>
-          <p class="text-sm text-ink/75 leading-relaxed">Built the logic layer for many features, including the monthly budget and spending limits. Also contributed to testing, including unit tests, integration tests, and E2E tests.</p>
-        </div>
-        <div>
-          <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2">Technical skills gained</div>
-          <p class="text-sm text-ink/75 leading-relaxed">Gained familiarity with correct programming practices such as SOLID, and experience spotting code smells. Also gained skills in JUnit testing and Mockito.</p>
-        </div>
-      </div>
-    </article>
-
-    <!-- Member 4 -->
-    <article class="bg-white border border-ink/10 rounded-3xl p-8 lift">
-      <div class="flex items-start justify-between gap-4">
-        <div>
-          <div class="font-display text-2xl font-black">Pratham Patel</div>
-          <a href="mailto:patelpd3@myumanitoba.ca" class="text-sm text-mint-700 font-mono">patelpd3@myumanitoba.ca</a>
-        </div>
-        <div class="w-14 h-14 rounded-full bg-mint-100 flex items-center justify-center font-display font-black text-2xl text-mint-700">P</div>
-      </div>
-      <div class="mt-6 space-y-4">
-        <div>
-          <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2">Contributions</div>
-          <p class="text-sm text-ink/75 leading-relaxed"><span class="todo">TODO</span> List Pratham's specific features / components.</p>
-        </div>
-        <div>
-          <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-2">Technical skills gained</div>
-          <p class="text-sm text-ink/75 leading-relaxed"><span class="todo">TODO</span> List the technical skills Pratham picked up during the project.</p>
-        </div>
-      </div>
-    </article>
-
-  </div>
-</section>
-
-<!-- ─────────────────── DEMO ─────────────────── -->
-<section id="demo" class="relative z-10 py-28 bg-mint-50 border-y border-mint-200">
-  <div class="max-w-7xl mx-auto px-6">
-    <div class="text-xs font-mono uppercase tracking-widest text-mint-700">§ 04 — Product demo</div>
-    <h2 class="font-display text-5xl md:text-7xl font-black mt-4 leading-none">See it<br/><em class="font-serif font-normal">in motion.</em></h2>
-    <p class="mt-8 max-w-2xl text-lg text-ink/70">A guided walkthrough of the primary user flows: sign-in, transaction entry, analytics dashboard, spending limits, and budget projection.</p>
-
-    <div class="mt-12 bg-ink rounded-3xl overflow-hidden aspect-video shadow-2xl border border-ink/20 relative">
-      <!-- TODO: replace with real video -->
-      <div class="absolute inset-0 flex flex-col items-center justify-center text-cream/80 text-center p-10">
-        <div class="w-20 h-20 rounded-full bg-mint-500 flex items-center justify-center text-3xl mb-6">▶</div>
-        <div class="font-display text-2xl font-bold">Screen recording placeholder</div>
-        <p class="text-cream/60 text-sm mt-2 max-w-md">
-          <span class="todo">TODO</span> Drop the final <code class="font-mono">demo.mp4</code> file into <code class="font-mono">/website/assets/</code> and replace this placeholder with a <code class="font-mono">&lt;video&gt;</code> tag — or embed an unlisted YouTube link.
-        </p>
-        <pre class="mt-6 text-xs font-mono bg-ink/60 border border-cream/10 rounded-xl p-4 text-left text-cream/70 max-w-md overflow-auto">&lt;video controls poster="assets/poster.png"
+				<div
+					class="mt-12 bg-ink rounded-3xl overflow-hidden aspect-video shadow-2xl border border-ink/20 relative"
+				>
+					<!-- TODO: replace with real video -->
+					<div
+						class="absolute inset-0 flex flex-col items-center justify-center text-cream/80 text-center p-10"
+					>
+						<div
+							class="w-20 h-20 rounded-full bg-mint-500 flex items-center justify-center text-3xl mb-6"
+						>
+							▶
+						</div>
+						<div class="font-display text-2xl font-bold">
+							Screen recording placeholder
+						</div>
+						<p class="text-cream/60 text-sm mt-2 max-w-md">
+							<span class="todo">TODO</span> Drop the final
+							<code class="font-mono">demo.mp4</code> file into
+							<code class="font-mono">/website/assets/</code> and
+							replace this placeholder with a
+							<code class="font-mono">&lt;video&gt;</code> tag —
+							or embed an unlisted YouTube link.
+						</p>
+						<pre
+							class="mt-6 text-xs font-mono bg-ink/60 border border-cream/10 rounded-xl p-4 text-left text-cream/70 max-w-md overflow-auto"
+						>
+&lt;video controls poster="assets/poster.png"
        class="w-full h-full object-cover"&gt;
   &lt;source src="assets/demo.mp4" type="video/mp4"&gt;
-&lt;/video&gt;</pre>
-      </div>
-    </div>
-  </div>
-</section>
+&lt;/video&gt;</pre
+						>
+					</div>
+				</div>
+			</div>
+		</section>
 
-<!-- ─────────────────── POSTMORTEM ─────────────────── -->
-<section id="postmortem" class="max-w-7xl mx-auto px-6 py-28 relative z-10">
-  <div class="text-xs font-mono uppercase tracking-widest text-mint-700">§ 05 — Development postmortem</div>
-  <h2 class="font-display text-5xl md:text-7xl font-black mt-4 leading-none">What we<br/>learned.</h2>
+		<!-- ─────────────────── POSTMORTEM ─────────────────── -->
+		<section
+			id="postmortem"
+			class="max-w-7xl mx-auto px-6 py-28 relative z-10"
+		>
+			<div
+				class="text-xs font-mono uppercase tracking-widest text-mint-700"
+			>
+				§ 05 — Development postmortem
+			</div>
+			<h2
+				class="font-display text-5xl md:text-7xl font-black mt-4 leading-none"
+			>
+				What we<br />learned.
+			</h2>
 
-  <!-- Architecture block -->
-  <div class="mt-16 grid md:grid-cols-12 gap-8">
-    <div class="md:col-span-5">
-      <div class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-3">Architecture</div>
-      <h3 class="font-display text-3xl font-black">Three clean layers.</h3>
-      <p class="mt-4 text-ink/70 leading-relaxed">CommonCents follows a strict three-layer architecture. The business layer never touches Android APIs; the persistence layer ships with both a <strong>stub</strong> in-memory implementation and a <strong>real</strong> SQLite implementation behind the same interfaces, which made every service unit-testable without an emulator.</p>
-    </div>
-    <div class="md:col-span-7">
-      <div class="bg-white border border-ink/10 rounded-3xl p-6 stat-grid">
-        <div class="space-y-3 font-mono text-sm">
-          <div class="bg-mint-100 border border-mint-300 rounded-xl p-4">
-            <div class="font-bold text-mint-800">▲ presentation/</div>
-            <div class="text-ink/60 text-xs mt-1">~20 Activities · home, analytics, add/edit, profile, search, limits, imports</div>
-          </div>
-          <div class="text-center text-ink/30">│</div>
-          <div class="bg-mint-200/60 border border-mint-400 rounded-xl p-4">
-            <div class="font-bold text-mint-800">◆ business/services/</div>
-            <div class="text-ink/60 text-xs mt-1">11 managers · Financial, Analytics, Automation, BudgetProjection, Export, Import, SearchSort, SpendingLimit, User, Validation…</div>
-          </div>
-          <div class="text-center text-ink/30">│</div>
-          <div class="bg-mint-300/60 border border-mint-500 rounded-xl p-4">
-            <div class="font-bold text-mint-900">▼ persistence/</div>
-            <div class="text-ink/60 text-xs mt-1">7 interfaces · <code>stubdatabase/</code> for tests + <code>realdatabase/</code> SQLite for production</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+			<!-- Architecture block -->
+			<div class="mt-16 grid md:grid-cols-12 gap-8">
+				<div class="md:col-span-5">
+					<div
+						class="text-xs font-mono uppercase tracking-widest text-ink/50 mb-3"
+					>
+						Architecture
+					</div>
+					<h3 class="font-display text-3xl font-black">
+						Three clean layers.
+					</h3>
+					<p class="mt-4 text-ink/70 leading-relaxed">
+						CommonCents follows a strict three-layer architecture.
+						The business layer never touches Android APIs; the
+						persistence layer ships with both a
+						<strong>stub</strong> in-memory implementation and a
+						<strong>real</strong> SQLite implementation behind the
+						same interfaces, which made every service unit-testable
+						without an emulator.
+					</p>
+				</div>
+				<div class="md:col-span-7">
+					<div
+						class="bg-white border border-ink/10 rounded-3xl p-6 stat-grid"
+					>
+						<div class="space-y-3 font-mono text-sm">
+							<div
+								class="bg-mint-100 border border-mint-300 rounded-xl p-4"
+							>
+								<div class="font-bold text-mint-800">
+									▲ presentation/
+								</div>
+								<div class="text-ink/60 text-xs mt-1">
+									~20 Activities · home, analytics, add/edit,
+									profile, search, limits, imports
+								</div>
+							</div>
+							<div class="text-center text-ink/30">│</div>
+							<div
+								class="bg-mint-200/60 border border-mint-400 rounded-xl p-4"
+							>
+								<div class="font-bold text-mint-800">
+									◆ business/services/
+								</div>
+								<div class="text-ink/60 text-xs mt-1">
+									11 managers · Financial, Analytics,
+									Automation, BudgetProjection, Export,
+									Import, SearchSort, SpendingLimit, User,
+									Validation…
+								</div>
+							</div>
+							<div class="text-center text-ink/30">│</div>
+							<div
+								class="bg-mint-300/60 border border-mint-500 rounded-xl p-4"
+							>
+								<div class="font-bold text-mint-900">
+									▼ persistence/
+								</div>
+								<div class="text-ink/60 text-xs mt-1">
+									7 interfaces ·
+									<code>stubdatabase/</code> for tests +
+									<code>realdatabase/</code> SQLite for
+									production
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 
-  <!-- Iteration 2 retrospective -->
-  <div class="mt-20 bg-gradient-to-br from-mint-600 to-mint-800 text-cream rounded-3xl p-10 md:p-14">
-    <div class="text-xs font-mono uppercase tracking-widest text-mint-200">Iteration 2 retrospective</div>
-    <h3 class="font-display text-4xl md:text-5xl font-black mt-4 leading-tight">The improvement area.</h3>
+			<!-- Iteration 2 retrospective -->
+			<div
+				class="mt-20 bg-gradient-to-br from-mint-600 to-mint-800 text-cream rounded-3xl p-10 md:p-14"
+			>
+				<div
+					class="text-xs font-mono uppercase tracking-widest text-mint-200"
+				>
+					Iteration 2 retrospective
+				</div>
+				<h3
+					class="font-display text-4xl md:text-5xl font-black mt-4 leading-tight"
+				>
+					The improvement area.
+				</h3>
 
-    <div class="mt-10 grid md:grid-cols-3 gap-8">
-      <div>
-        <div class="text-sm font-mono uppercase tracking-widest text-mint-300 mb-3">What changed</div>
-        <p class="text-cream/90 leading-relaxed text-sm"><span class="todo">TODO</span> Describe the specific improvement area you identified after Iteration 2. E.g. PR review turnaround, test coverage, commit hygiene, standup discipline, branching strategy.</p>
-      </div>
-      <div>
-        <div class="text-sm font-mono uppercase tracking-widest text-mint-300 mb-3">Was it successful?</div>
-        <p class="text-cream/90 leading-relaxed text-sm"><span class="todo">TODO</span> Your honest assessment — fully, partially, or not at all, and why.</p>
-      </div>
-      <div>
-        <div class="text-sm font-mono uppercase tracking-widest text-mint-300 mb-3">Evidence</div>
-        <p class="text-cream/90 leading-relaxed text-sm"><span class="todo">TODO</span> Concrete evidence: commit velocity numbers, MR review times, test count growth, issue closure rates, retro notes. The rubric explicitly asks for this.</p>
-      </div>
-    </div>
-  </div>
+				<div class="mt-10 grid md:grid-cols-3 gap-8">
+					<div>
+						<div
+							class="text-sm font-mono uppercase tracking-widest text-mint-300 mb-3"
+						>
+							What changed
+						</div>
+						<p class="text-cream/90 leading-relaxed text-sm">
+							<span class="todo">TODO</span> Describe the specific
+							improvement area you identified after Iteration 2.
+							E.g. PR review turnaround, test coverage, commit
+							hygiene, standup discipline, branching strategy.
+						</p>
+					</div>
+					<div>
+						<div
+							class="text-sm font-mono uppercase tracking-widest text-mint-300 mb-3"
+						>
+							Was it successful?
+						</div>
+						<p class="text-cream/90 leading-relaxed text-sm">
+							<span class="todo">TODO</span> Your honest
+							assessment — fully, partially, or not at all, and
+							why.
+						</p>
+					</div>
+					<div>
+						<div
+							class="text-sm font-mono uppercase tracking-widest text-mint-300 mb-3"
+						>
+							Evidence
+						</div>
+						<p class="text-cream/90 leading-relaxed text-sm">
+							<span class="todo">TODO</span> Concrete evidence:
+							commit velocity numbers, MR review times, test count
+							growth, issue closure rates, retro notes. The rubric
+							explicitly asks for this.
+						</p>
+					</div>
+				</div>
+			</div>
 
-  <!-- What went right / wrong -->
-  <div class="mt-12 grid md:grid-cols-2 gap-6">
-    <div class="bg-white border border-ink/10 rounded-3xl p-8 lift">
-      <div class="text-xs font-mono uppercase tracking-widest text-mint-700 mb-3">✓ What went well</div>
-      <ul class="space-y-3 text-ink/75 text-sm leading-relaxed">
-        <li><strong class="text-ink">Stub + real DB split.</strong> Every service was unit-tested against the stub long before SQLite existed — zero business logic ever blocked on the database.</li>
-        <li><strong class="text-ink">Interface-first persistence.</strong> Swapping the real repository in was a single DI change, not a rewrite.</li>
-        <li><strong class="text-ink">Test culture.</strong> 62+ test files across unit and instrumented suites gave us confidence to refactor late in the term.</li>
-        <li><span class="todo">TODO</span> Add one more team-specific win.</li>
-      </ul>
-    </div>
-    <div class="bg-white border border-ink/10 rounded-3xl p-8 lift">
-      <div class="text-xs font-mono uppercase tracking-widest text-rose-700 mb-3">✗ What we'd change</div>
-      <ul class="space-y-3 text-ink/75 text-sm leading-relaxed">
-        <li><span class="todo">TODO</span> Design smell you noticed late (fat activity? god-service? shared mutable state?).</li>
-        <li><span class="todo">TODO</span> Outstanding bug or piece of technical debt you didn't close.</li>
-        <li><span class="todo">TODO</span> A distribution-of-effort imbalance across the three layers.</li>
-        <li><span class="todo">TODO</span> One thing you'd redo from Iteration 0 if starting over.</li>
-      </ul>
-    </div>
-  </div>
+			<!-- What went right / wrong -->
+			<div class="mt-12 grid md:grid-cols-2 gap-6">
+				<div class="bg-white border border-ink/10 rounded-3xl p-8 lift">
+					<div
+						class="text-xs font-mono uppercase tracking-widest text-mint-700 mb-3"
+					>
+						✓ What went well
+					</div>
+					<ul class="space-y-3 text-ink/75 text-sm leading-relaxed">
+						<li>
+							<strong class="text-ink"
+								>Stub + real DB split.</strong
+							>
+							Every service was unit-tested against the stub long
+							before SQLite existed — zero business logic ever
+							blocked on the database.
+						</li>
+						<li>
+							<strong class="text-ink"
+								>Interface-first persistence.</strong
+							>
+							Swapping the real repository in was a single DI
+							change, not a rewrite.
+						</li>
+						<li>
+							<strong class="text-ink">Test culture.</strong> 62+
+							test files across unit and instrumented suites gave
+							us confidence to refactor late in the term.
+						</li>
+						<li>
+							<span class="todo">TODO</span> Add one more
+							team-specific win.
+						</li>
+					</ul>
+				</div>
+				<div class="bg-white border border-ink/10 rounded-3xl p-8 lift">
+					<div
+						class="text-xs font-mono uppercase tracking-widest text-rose-700 mb-3"
+					>
+						✗ What we'd change
+					</div>
+					<ul class="space-y-3 text-ink/75 text-sm leading-relaxed">
+						<li>
+							<span class="todo">TODO</span> Design smell you
+							noticed late (fat activity? god-service? shared
+							mutable state?).
+						</li>
+						<li>
+							<span class="todo">TODO</span> Outstanding bug or
+							piece of technical debt you didn't close.
+						</li>
+						<li>
+							<span class="todo">TODO</span> A
+							distribution-of-effort imbalance across the three
+							layers.
+						</li>
+						<li>
+							<span class="todo">TODO</span> One thing you'd redo
+							from Iteration 0 if starting over.
+						</li>
+					</ul>
+				</div>
+			</div>
 
-  <!-- Lessons learned -->
-  <div class="mt-12 bg-white border border-ink/10 rounded-3xl p-10">
-    <div class="text-xs font-mono uppercase tracking-widest text-mint-700 mb-3">Lessons learned</div>
-    <h3 class="font-display text-3xl font-black">Teamwork &amp; large projects.</h3>
-    <p class="mt-5 text-ink/75 leading-relaxed max-w-3xl"><span class="todo">TODO</span> 2–3 sentences reflecting on how the team grew across iterations — coordination, scrums, PR reviews, handling blockers, scope negotiation. Focus on systems and process, not individuals (per the instructions).</p>
-  </div>
-</section>
+			<!-- Lessons learned -->
+			<div class="mt-12 bg-white border border-ink/10 rounded-3xl p-10">
+				<div
+					class="text-xs font-mono uppercase tracking-widest text-mint-700 mb-3"
+				>
+					Lessons learned
+				</div>
+				<h3 class="font-display text-3xl font-black">
+					Teamwork &amp; large projects.
+				</h3>
+				<p class="mt-5 text-ink/75 leading-relaxed max-w-3xl">
+					<span class="todo">TODO</span> 2–3 sentences reflecting on
+					how the team grew across iterations — coordination, scrums,
+					PR reviews, handling blockers, scope negotiation. Focus on
+					systems and process, not individuals (per the instructions).
+				</p>
+			</div>
+		</section>
 
-<!-- ─────────────────── FOOTER ─────────────────── -->
-<footer class="bg-ink text-cream/80 relative z-10">
-  <div class="max-w-7xl mx-auto px-6 py-16">
-    <div class="grid md:grid-cols-3 gap-10">
-      <div>
-        <div class="font-display text-3xl font-black text-cream">Common<span class="text-mint-400">¢</span>ents</div>
-        <p class="mt-3 text-sm text-cream/60">Real-time budgeting for students and freelancers. Built with care by Group 13 — the BrokieBros.</p>
-      </div>
-      <div>
-        <div class="text-xs font-mono uppercase tracking-widest text-mint-400 mb-3">Course</div>
-        <p class="text-sm">COMP 3350 — Software Engineering</p>
-        <p class="text-sm">University of Manitoba · Winter 2026</p>
-        <p class="text-sm">Instructor: Himbeault</p>
-      </div>
-      <div>
-        <div class="text-xs font-mono uppercase tracking-widest text-mint-400 mb-3">Links</div>
-        <ul class="space-y-1 text-sm">
-          <li><a href="https://code.cs.umanitoba.ca/comp3350-winter2026/a02-g13-brokiebros" class="hover:text-mint-400 transition">GitLab repository ↗</a></li>
-          <li><a href="#demo" class="hover:text-mint-400 transition">Product demo</a></li>
-          <li><a href="#postmortem" class="hover:text-mint-400 transition">Postmortem</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="mt-16 pt-8 border-t border-cream/10 text-xs text-cream/50 font-mono flex flex-wrap justify-between gap-4">
-      <span>© 2026 Group 13 — BrokieBros</span>
-      <span>Made with ¢ents and caffeine</span>
-    </div>
-  </div>
-</footer>
-
-</body>
+		<!-- ─────────────────── FOOTER ─────────────────── -->
+		<footer class="bg-ink text-cream/80 relative z-10">
+			<div class="max-w-7xl mx-auto px-6 py-16">
+				<div class="grid md:grid-cols-3 gap-10">
+					<div>
+						<div
+							class="font-display text-3xl font-black text-cream"
+						>
+							Common<span class="text-mint-400">¢</span>ents
+						</div>
+						<p class="mt-3 text-sm text-cream/60">
+							Real-time budgeting for students and freelancers.
+							Built with care by Group 13 — the BrokieBros.
+						</p>
+					</div>
+					<div>
+						<div
+							class="text-xs font-mono uppercase tracking-widest text-mint-400 mb-3"
+						>
+							Course
+						</div>
+						<p class="text-sm">COMP 3350 — Software Engineering</p>
+						<p class="text-sm">
+							University of Manitoba · Winter 2026
+						</p>
+						<p class="text-sm">Instructor: Himbeault</p>
+					</div>
+					<div>
+						<div
+							class="text-xs font-mono uppercase tracking-widest text-mint-400 mb-3"
+						>
+							Links
+						</div>
+						<ul class="space-y-1 text-sm">
+							<li>
+								<a
+									href="https://code.cs.umanitoba.ca/comp3350-winter2026/a02-g13-brokiebros"
+									class="hover:text-mint-400 transition"
+									>GitLab repository ↗</a
+								>
+							</li>
+							<li>
+								<a
+									href="#demo"
+									class="hover:text-mint-400 transition"
+									>Product demo</a
+								>
+							</li>
+							<li>
+								<a
+									href="#postmortem"
+									class="hover:text-mint-400 transition"
+									>Postmortem</a
+								>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div
+					class="mt-16 pt-8 border-t border-cream/10 text-xs text-cream/50 font-mono flex flex-wrap justify-between gap-4"
+				>
+					<span>© 2026 Group 13 — BrokieBros</span>
+					<span>Made with ¢ents and caffeine</span>
+				</div>
+			</div>
+		</footer>
+	</body>
 </html>
