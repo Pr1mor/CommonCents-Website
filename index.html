@@ -857,35 +857,15 @@
 				<div
 					class="mt-12 bg-ink rounded-3xl overflow-hidden aspect-video shadow-2xl border border-ink/20 relative"
 				>
-					<!-- TODO: replace with real video -->
-					<div
-						class="absolute inset-0 flex flex-col items-center justify-center text-cream/80 text-center p-10"
+					<video
+						controls
+						playsinline
+						class="w-full h-full object-cover"
+						aria-label="CommonCents App Demo"
 					>
-						<div
-							class="w-20 h-20 rounded-full bg-mint-500 flex items-center justify-center text-3xl mb-6"
-						>
-							▶
-						</div>
-						<div class="font-display text-2xl font-bold">
-							Screen recording placeholder
-						</div>
-						<p class="text-cream/60 text-sm mt-2 max-w-md">
-							<span class="todo">TODO</span> Drop the final
-							<code class="font-mono">demo.mp4</code> file into
-							<code class="font-mono">/website/assets/</code> and
-							replace this placeholder with a
-							<code class="font-mono">&lt;video&gt;</code> tag —
-							or embed an unlisted YouTube link.
-						</p>
-						<pre
-							class="mt-6 text-xs font-mono bg-ink/60 border border-cream/10 rounded-xl p-4 text-left text-cream/70 max-w-md overflow-auto"
-						>
-&lt;video controls poster="assets/poster.png"
-       class="w-full h-full object-cover"&gt;
-  &lt;source src="assets/demo.mp4" type="video/mp4"&gt;
-&lt;/video&gt;</pre
-						>
-					</div>
+						<source src="demo.mp4" type="video/mp4" />
+						Your browser does not support the video tag.
+					</video>
 				</div>
 			</div>
 		</section>
